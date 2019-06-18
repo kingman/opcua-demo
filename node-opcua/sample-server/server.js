@@ -1,69 +1,56 @@
 const opcua = require("node-opcua");
+const config = require("./server_config.json");
 
 const server = new opcua.OPCUAServer({
-    port: 4334, // the port of the listening socket of the server
-    resourcePath: "UA/SensorServer", // this path will be added to the endpoint resource name
+    port: config.port, // the port of the listening socket of the server
+    resourcePath: config.resourcePath, // this path will be added to the endpoint resource name
      buildInfo : {
-        productName: "MySampleServer1",
-        buildNumber: "7658",
-        buildDate: new Date(2019,3,28)
+        productName: config.buildInfo.productName,
+        buildNumber: config.buildInfo.buildNumber,
+        buildDate: new Date(2019,6,16)
     },
-    alternateHostname: "localhost"
+    alternateHostname: config.alternateHostname
 });
+
+function addObjectTo(addressSpace, object) {
+  const namespace = addressSpace.getOwnNamespace();
+  const serverObject = namespace.addObject({
+    organizedBy: addressSpace.rootFolder.objects,
+    browseName: object.browseName
+  });
+  for(let variable of object.metaData) {
+    namespace.addVariable({
+      componentOf: serverObject,
+      browseName: variable.browseName,
+      dataType: variable.dataType,
+      value: {
+        get: () => {
+          return new opcua.Variant({dataType: opcua.DataType[variable.dataType], value: variable.value });
+        }
+      }
+    });
+  }
+  let counter = 0;
+  setInterval(() => {counter=Math.floor(Math.random() * (object.value.max-object.value.min+1))+object.value.min}, object.value.updatefrequency);
+  namespace.addVariable({
+    componentOf: serverObject,
+    browseName: object.value.browseName,
+    dataType: object.value.dataType,
+    value: {
+        get: () => {
+            return new opcua.Variant({dataType: opcua.DataType[object.value.dataType], value: counter });
+        }
+    }
+  });
+}
 
 function post_initialize() {
     console.log("initialized");
     function construct_my_address_space(server) {
-
-        const addressSpace = server.engine.addressSpace;
-        const namespace = addressSpace.getOwnNamespace();
-
-        // declare a new object
-        const sensor = namespace.addObject({
-            organizedBy: addressSpace.rootFolder.objects,
-            browseName: "CounterSensor"
-        });
-
-        const plantId = "SWE-STO-42";
-        namespace.addVariable({
-          componentOf: sensor,
-          browseName: "PlantId",
-          dataType: "String",
-          value: {
-            get: function () {
-              return new opcua.Variant({dataType: opcua.DataType.String, value: plantId });
-            }
-          }
-        });
-
-        const lineId = "Line-1";
-
-        namespace.addVariable({
-          componentOf: sensor,
-          browseName: "LineId",
-          dataType: "String",
-          value: {
-            get: function () {
-              return new opcua.Variant({dataType: opcua.DataType.String, value: lineId });
-            }
-          }
-        });
-
-        let counter = 0;
-
-        // emulate variable1 changing every 500 ms
-        setInterval(function(){counter=Math.floor(Math.random() * 101); }, 500);
-
-        namespace.addVariable({
-            componentOf: sensor,
-            browseName: "Counter",
-            dataType: "UInt16",
-            value: {
-                get: function () {
-                    return new opcua.Variant({dataType: opcua.DataType.UInt16, value: counter });
-                }
-            }
-        });
+      const addressSpace = server.engine.addressSpace;
+      for(let object of config.objects) {
+        addObjectTo(addressSpace, object);
+      }
     }
     construct_my_address_space(server);
     server.start(function() {
