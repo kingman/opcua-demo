@@ -108,3 +108,6 @@ Pull message from Pub/Sub subscription. In Cloud Shell run:
 ```bash
 gcloud pubsub subscriptions pull read-opcua-data --auto-ack
 ```
+
+## Shut down the sample server
+In the Cloud Shell session, where the sample client is running: press `CTRL`+`c`.
