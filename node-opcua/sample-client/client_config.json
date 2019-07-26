@@ -28,14 +28,14 @@
   },
   "cloud": {
     "projectId": "<replace with project id>",
-    "registryId": "<replace with registry id>",
-    "region": "<replace with region>",
-    "deviceId": "<replace with device id>",
+    "registryId": "opc-devices",
+    "region": "us-central1",
+    "deviceId": "opc-device",
     "algorithm": "RS256",
     "privateKeyFile": "rsa_private.pem",
     "mqttBridgeHostname": "mqtt.googleapis.com",
     "mqttBridgePort": "8883",
     "messageInterval": 10000
   },
-  "cloudEnabled": false
+  "cloudEnabled": true
 }

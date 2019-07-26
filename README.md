@@ -1,6 +1,7 @@
 # opcua-demo
-This repository contains sample code that demostrates how to use [Node OPC UA](https://node-opcua.github.io/) to relay sensor data from [OPC-UA](https://opcfoundation.org/about/opc-technologies/opc-ua/) server to [Google Cloud IoT Core](https://cloud.google.com/iot-core/).  
-The sample server code starts an opc-ua server that generates random integer number at regular interval. The server properties is configured in: `node-opcua/sample-server/server_config.json`, which let you change meta data exposed by the sensor object as well as the max, min and update frequecy of the random value.  
+This repository contains sample code that demonstrates how to use [Node OPC UA](https://node-opcua.github.io/) to relay sensor data from [OPC-UA](https://opcfoundation.org/about/opc-technologies/opc-ua/) server to [Google Cloud IoT Core](https://cloud.google.com/iot-core/).
+The sample server code starts an opc-ua server that generates random integer number at regular interval. The server properties is configured in: `node-opcua/sample-server/server_config.json`, which let you change meta data exposed by the sensor object as well as the max, min and update frequency of the random value.
+![overview](images/opcua-iotcore.png)
 The sample client code starts an OPC-UA client that monitors changes of the sensor value and sends the accumulated data to GCP via Cloud IoT Core. 
 
 ## Create a GCP project
@@ -30,13 +31,13 @@ Replace the place holder values with your values and run the commands in Cloud S
 ```bash
 export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
 
-export EVENT_TOPIC=<place holder value>
+export EVENT_TOPIC=opc-telemetry
 
-export REGISTRY_ID=<place holder value>
+export REGISTRY_ID=opc-devices
 
-export REGION=<place holde value, us-central1, europe-west1, or asia-east1>
+export REGION=us-central1
 
-export DEVICE_ID=<place holder value>
+export DEVICE_ID=opc-device
 ```
 ### Create Pub/Sub topic
 ```bash
@@ -58,8 +59,6 @@ openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.
 ### Provision device identity on GCP
 Device identity is needed for the OPC-UA client identify itself to Cloud IoT Core. 
 ```bash
-cd ~/opcua-demo/node-opcua/sample-client
-
 gcloud iot devices create $DEVICE_ID \
 --region=$REGION \
 --registry=$REGISTRY_ID \
@@ -73,15 +72,10 @@ gcloud pubsub subscriptions create read-opcua-data \
 ```
 
 ## Configure the sample client
-Edit the client config file `~/opcua-demo/node-opcua/sample-client/client_config.json`. Replace follow values with your values under the `cloud` object.
-```json
-"projectId": "<replace with project id>",
-"registryId": "<replace with registry id>",
-"region": "<replace with region>",
-"deviceId": "<replace with device id>",
+Set your GCP project id in the client config file. In Cloud Shell run:
+```bash
+sed -i -e 's/<replace with project id>/'"${PROJECT_ID}"'/g' ~/opcua-demo/node-opcua/sample-client/client_config.json
 ```
-and set `cloudEnabled` value to `true`.
-
 ## Start the sample server
 In Cloud Shell run:
 ```bash
