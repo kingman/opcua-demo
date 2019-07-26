@@ -100,10 +100,18 @@ npm start
 ```
 
 ## Verify sensor data in Pub/Sub
-Pull message from Pub/Sub subscription. In Cloud Shell run:
+Pull message from Pub/Sub subscription. Start another Cloud Shell session in the same project by click at **+** button. In Cloud Shell run:
 ```bash
 gcloud pubsub subscriptions pull read-opcua-data --auto-ack
 ```
 
 ## Shut down the sample server
-In the Cloud Shell session, where the sample client is running: press `CTRL`+`c`.
+In the Cloud Shell session, where the sample server is running: press `CTRL`+`c`.
+## Cleaning up
+To avoid incurring charges to your Google Cloud Platform account for the resources used in this tutorial:
+### Delete the project
+The easiest way to eliminate billing is to delete the project you created for the tutorial.
+To delete the project:
+1. In the Cloud Platform Console, go to the Projects page. [GO TO THE PROJECTS PAGE](https://console.cloud.google.com/iam-admin/projects)
+1. In the project list, select the project you want to delete and click **Delete**.
+1. In the dialog, type the project ID, and then click **Shut down** to delete the project.
