@@ -1,7 +1,9 @@
 # opcua-demo
 This repository contains sample code that demonstrates how to use [Node OPC UA](https://node-opcua.github.io/) to relay sensor data from [OPC-UA](https://opcfoundation.org/about/opc-technologies/opc-ua/) server to [Google Cloud IoT Core](https://cloud.google.com/iot-core/).
-The sample server code starts an opc-ua server that generates random integer number at regular interval. The server properties is configured in: `node-opcua/sample-server/server_config.json`, which let you change meta data exposed by the sensor object as well as the max, min and update frequency of the random value.
-![overview](images/opcua-iotcore.png)
+The sample server code starts an opc-ua server that generates random integer number at regular interval. The server properties is configured in: `node-opcua/sample-server/server_config.json`, which let you change meta data exposed by the sensor object as well as the max, min and update frequency of the random value.  
+
+![overview](images/opcua-iotcore.png)  
+
 The sample client code starts an OPC-UA client that monitors changes of the sensor value and sends the accumulated data to GCP via Cloud IoT Core. 
 
 ## Create a GCP project
@@ -27,7 +29,7 @@ git clone https://github.com/kingman/opcua-demo.git
 
 ## Cloud IoT setup
 ### Set environment variables in Cloud Shell
-Replace the place holder values with your values and run the commands in Cloud Shell:
+Run in Cloud Shell:
 ```bash
 export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
 
